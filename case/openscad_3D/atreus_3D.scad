@@ -319,7 +319,8 @@ module quartered_spacer()
 
 translate([0,0,9]) top_plate();
 translate([0, 0, 6]) { switch_plate(); }
-translate([300, 0,0]) { bottom_plate(); }
+bottom_plate_offset = ((((n_cols*2)+n_thumb_keys)*row_spacing)+(row_spacing*(n_cols*(angle/30)))+hand_separation);
+translate([bottom_plate_offset, 0,0]) { bottom_plate(); }
 translate([0,0,3]) spacer();
 translate([0, 0,0]) {
   if (quarter_spacer == true) {
