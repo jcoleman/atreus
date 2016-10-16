@@ -60,6 +60,10 @@ cable_hole_width = 12;
    be zero. */
 staggering_offsets = [0, 5, 11, 6, 3];
 
+if (len(staggering_offsets) != n_cols) {
+  echo("Please ensure that stagger_offsets has n_cols items");
+}
+
 /* Whether or not to split the spacer into quarters. */
 quarter_spacer = false;
 
