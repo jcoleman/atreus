@@ -47,8 +47,11 @@ use_notched_holes = true;
 n_rows = 4;
 n_cols = 5;
 
-/* Number of thumb keys (per hand), try 1 or 2. */
-n_thumb_keys = 1;
+/* Number of thumb keys (total); if even then half of this number
+   per hand, if odd there will be a center thumb key in addition. */
+n_thumb_keys = 4;
+n_thumb_keys_per_hand = floor(n_thumb_keys / 2);
+center_thumb_key = n_thumb_keys == n_thumb_keys_per_hand;
 
 /* The width of the USB cable hole in the spacer. */
 cable_hole_width = 12;
@@ -165,7 +168,7 @@ module right_half (switch_holes=true, key_size=key_hole_size) {
   thumb_key_offset = y_offset + 0.5 * column_spacing;
   rotate_half() {
     add_hand_separation() {
-      for (j=[0:(n_thumb_keys-1)]) {
+      for (j=[0:(n_thumb_keys_per_hand-1)]) {
         if (switch_holes == true) {
           switch_hole([x_offset + j*row_spacing, thumb_key_offset,-1]);
         } else {
@@ -173,7 +176,7 @@ module right_half (switch_holes=true, key_size=key_hole_size) {
         }
       }
       for (j=[0:(n_cols-1)]) {
-        column([x_offset + (j+n_thumb_keys)*row_spacing, y_offset + staggering_offsets[j]], switch_holes, key_size);
+        column([x_offset + (j+(n_thumb_keys/2))*row_spacing, y_offset + staggering_offsets[j]], switch_holes, key_size);
       }
     }
   }
@@ -201,7 +204,7 @@ module screw_hole(radius, offset_radius, position, direction) {
 
 module right_screw_holes(hole_radius) {
   /* coordinates of the back right screw hole before rotation... */
-  back_right = [(n_cols+n_thumb_keys)*row_spacing,
+  back_right = [(n_cols+(n_thumb_keys/2))*row_spacing,
                staggering_offsets[n_cols-1] + n_rows * column_spacing];
   /* and after */
   tmp = rz_fun(back_right, angle, [0, 2.25*column_spacing]);
@@ -214,7 +217,7 @@ module right_screw_holes(hole_radius) {
                  [row_spacing, 0],
                  [-nudge, -nudge]);
       screw_hole(hole_radius, washer_radius,
-                 [(n_cols+n_thumb_keys)*row_spacing, staggering_offsets[n_cols-1]],
+                 [(n_cols+(n_thumb_keys/2))*row_spacing, staggering_offsets[n_cols-1]],
                  [nudge, -nudge]);
       screw_hole(hole_radius, washer_radius,
                  back_right,
