@@ -48,10 +48,13 @@ n_rows = 4;
 n_cols = 5;
 
 /* Number of thumb keys (total); if even then half of this number
-   per hand, if odd there will be a center thumb key in addition. */
-n_thumb_keys = 4;
+   per hand, if odd there will be a center thumb key in addition.
+   If you use a center thumb key, you may need to adjust the
+   thumb_key_offset in the right_half module to ensure that switches
+   have enough separation to function properly. */
+n_thumb_keys = 3;
 n_thumb_keys_per_hand = floor(n_thumb_keys / 2);
-center_thumb_key = n_thumb_keys == n_thumb_keys_per_hand;
+center_thumb_key = n_thumb_keys != n_thumb_keys_per_hand;
 
 /* The width of the USB cable hole in the spacer. */
 cable_hole_width = 12;
@@ -261,11 +264,28 @@ module bottom_plate() {
   }
 }
 
+module center_switches(switch_holes=true, key_size=key_hole_size) {
+  /* middle column of switches, if any (including odd-count thumb switch */
+  if (center_thumb_key) {
+    y_offset = 0.5 * column_spacing;
+    translate([0, y_offset]) {
+      if (switch_holes == true) {
+        switch_hole([0,5, -1]);
+        //switch_hole([0,50, -1]);
+      } else {
+        regular_key([0,5, -1], key_size);
+        //regular_key([0,50, -1], key_size);
+      }
+    }
+  }
+}
+
 module top_plate() {
   /* top layer of the case */
   difference() {
     bottom_plate();
     right_half(false);
+    center_switches(false);
     left_half(false);
   }
 }
@@ -275,6 +295,7 @@ module switch_plate() {
   difference() {
     bottom_plate();
     right_half();
+    center_switches();
     left_half();
   }
 }
@@ -287,6 +308,7 @@ module spacer() {
         bottom_plate();
         hull() {
           right_half(switch_holes=false, key_size=switch_hole_size + 3);
+          center_switches(switch_holes=false, key_size=switch_hole_size + 3);
           left_half(switch_holes=false, key_size=switch_hole_size + 3);
         }
     /* add the USB cable hole: */
